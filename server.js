@@ -12,9 +12,6 @@ app.use(express.json());
 // PAGINAS
 const path = require('path');
 
-// Servir archivos estáticos (css, js, imágenes)
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Carpeta pages
 const DIR_PAGES = path.join(__dirname, 'public/pages');
 
@@ -27,6 +24,10 @@ app.get('/:page', (req, res) => {
     const file = path.join(DIR_PAGES, req.params.page + '.html');
     res.sendFile(file);
 });
+
+// Servir archivos estáticos (css, js, imágenes)
+app.use(express.static(path.join(__dirname, 'public')));
+
 // FIN PAGINAS
 
 // ENDPOINTS

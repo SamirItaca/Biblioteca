@@ -1,11 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis libros</title>
-</head>
-<body>
-    
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Mis libros</title>
+
+        <!-- CSS personalizado -->
+        <link rel="stylesheet" href="/css/styles.css">
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        <!-- jQuery UI CSS -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+        <!-- jQuery UI JS -->
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+        <!-- JS personalizado -->
+        <script src="/js/app.js" defer></script>
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+        <div id="header"></div>
+
+        <!-- Footer -->
+        <div id="footer"></div>
+        
+        <script>
+            $(function(){
+                // Cargar header y footer
+                $("#header").load("/shared/header.html");
+                $("#footer").load("/shared/footer.html");
+            });
+        </script>
+
+    </body>
+
 </html>
