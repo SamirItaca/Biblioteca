@@ -73,7 +73,7 @@
             <section id="libros-agregados">
 
                 <h4>Libros agregados</h4>
-                <ul class="lista-libros"></ul>
+                <ul class="lista-libros" style="min-height: 600px;"></ul>
 
             </section>
 
@@ -85,7 +85,10 @@
         <script>
             $(function(){
                 // Cargar header y footer
-                $("#header").load("/shared/header.html");
+                $("#header").load("/shared/header.html", function() {
+                    $("#titleNavbar").text("Biblioteca");
+                });
+                
                 $("#footer").load("/shared/footer.html");
             });
         </script>

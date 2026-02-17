@@ -35,7 +35,8 @@ main > #libros-agregados { grid-area: 3 / 2 / 3 / 3; }
 }
 
 .lista-libros {
-    min-height: 200px;
+    max-height: 600px;     
+    overflow-y: auto;  
     padding: 4px;
     background-color: #ffffff;
     border-radius: 6px;

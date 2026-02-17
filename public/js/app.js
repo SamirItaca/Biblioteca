@@ -20,4 +20,9 @@ export function mensajeAlert(mensaje, tipo, tiempo = 3000) {
     }, tiempo);
 }
 
-window.mensajeAlert = mensajeAlert; // si también quieres llamar desde HTML
+export function cerrarSesion() {
+    window.location.href = '/login';
+}
+
+window.mensajeAlert = mensajeAlert;
+window.cerrarSesion = cerrarSesion;

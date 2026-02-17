@@ -164,12 +164,6 @@ function reiniciarBusqueda() {
 
 function guardarLibros() {
 
-    const librosGuardados = obtenerLibrosGuardados();
-
-    if (librosGuardados.length <= 0) {
-        mensajeAlert("No hay libros agregados", "danger")
-    }
-
     listaLibrosAgregadosHtml.empty();
     activarDroppable();
 
