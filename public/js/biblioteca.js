@@ -81,7 +81,7 @@ async function getLibros() {
 
     try {
         // Llamada a la API
-        const response = await fetch("http://localhost:3000/api/books/search");
+        const response = await fetch("https://custom-biblioteca.up.railway.app/api/books/search");
         if (!response.ok) throw new Error("Error al obtener libros desde la API");
 
         const todosLibros = await response.json();
