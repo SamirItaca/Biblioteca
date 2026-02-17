@@ -12,17 +12,17 @@ $(function() {
     // Seleccionamos lista de libros agregados
     listaLibrosAgregadosHtml = $("#libros-agregados .lista-libros");
 
-    // Ejemplo: generar tarjetas dentro de la lista de libros disponibles
-    libros = getLibros();
+    cargarLibros().then(librosObtenidos => {
 
-    // Crear tarjetas dinámicamente
-    crearListaLibros(libros, listaLibrosDisponiblesHtml);
+        libros = librosObtenidos;
 
-    // Hacer tarjetas draggable
-    activarDraggable();
+        // Crear tarjetas de libros
+        crearListaLibros(libros, listaLibrosDisponiblesHtml);
 
-    // Hacer listas droppable
-    activarDroppable();
+        // Hacer tarjetas draggable y droppable
+        activarDraggable();
+        activarDroppable();
+    });
 });
 
 function activarDraggable() {
@@ -54,30 +54,74 @@ function activarDroppable() {
     });
 }
 
-function getLibros() {
+async function cargarLibros() {
+    // Mostrar spinner mientras carga
+    const $spinner = $(`
+        <div class="d-flex justify-content-center my-3" id="spinner-carga">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    `);
 
-    const librosGuardados = obtenerLibrosGuardados(); // Array de libros ya agregados
+    listaLibrosDisponiblesHtml.empty().append($spinner);
 
-    // Lista completa de libros disponibles
-    const todosLibros = [
-        {id: 1, titulo: "El Hobbit"},
-        {id: 2, titulo: "Harry Potter"},
-        {id: 3, titulo: "1984"},
-        {id: 4, titulo: "Silo"}
-    ];
+    // Esperar los libros
+    const libros = await getLibros();
 
-    // Filtrar libros que ya están guardados
-    const libros = todosLibros.filter(libro =>
-        !librosGuardados.some(lg => lg.id === libro.id)
-    );
+    // Quitar spinner
+    $("#spinner-carga").remove();
 
     return libros;
+}
+
+async function getLibros() {
+    
+    const librosGuardados = obtenerLibrosGuardados(); // Array de libros ya agregados
+
+    try {
+        // Llamada a la API
+        const response = await fetch("http://localhost:3000/api/books/search");
+        if (!response.ok) throw new Error("Error al obtener libros desde la API");
+
+        const todosLibros = await response.json();
+
+        // Filtrar los libros que ya están guardados
+        const libros = todosLibros.filter(libro =>
+            !librosGuardados.some(lg => lg.title === libro.title)
+        );
+
+        return libros;
+
+    } catch (error) {
+        console.error(error);
+        // En caso de error, devolver array vacío
+        return [];
+    }
 }
 
 function crearListaLibros(libros, listalibrosHtml) {
     // Crear tarjetas dinámicamente
     libros.forEach(libro => {
-        const $tarjeta = $(`<div class="libro-card" data-id="${libro.id}">${libro.titulo}</div>`);
+        // Si authors no existe, usar un array vacío
+        const autores = Array.isArray(libro.authors) ? libro.authors : ['Sin autor'];
+
+        const $tarjeta = $(`
+            <li class="libro-card" style="list-style: none; margin-bottom: 10px;">
+                <div class="card d-flex flex-row align-items-start">
+                    <img src="${libro.thumbnail || '/img/placeholder.png'}" 
+                         class="card-img-left" 
+                         alt="${libro.title}" 
+                         style="width: 80px; height: auto; margin-right: 10px;">
+                    <div class="card-body p-2">
+                        <h5 class="card-title mb-1">${libro.title}</h5>
+                        <p class="card-text mb-0">${autores.join(", ")}</p>
+                        <p class="card-text mb-0">Paginas: ${libro.pages}</p>
+                    </div>
+                </div>
+            </li>
+        `);
+
         listalibrosHtml.append($tarjeta);
     });
 }
@@ -90,7 +134,7 @@ function buscarUnLibroPorTitulo() {
         return;
     }
 
-    let librosEncontrados = libros.filter(libro => libro.titulo.toLowerCase().includes(tituloLibro.toLowerCase()));
+    let librosEncontrados = libros.filter(libro => libro.title.toLowerCase().includes(tituloLibro.toLowerCase()));
 
     if (librosEncontrados.length <= 0) {
         mensajeAlert("No se encontraron libros", "danger");
@@ -107,9 +151,15 @@ function buscarUnLibroPorTitulo() {
 }
 
 function reiniciarBusqueda() {
-    listaLibrosDisponiblesHtml.empty();
-    crearListaLibros(getLibros(), listaLibrosDisponiblesHtml);
-    activarDraggable();
+    cargarLibros().then(librosObtenidos => {
+        listaLibrosDisponiblesHtml.empty();
+
+        libros = librosObtenidos;
+
+        crearListaLibros(librosObtenidos, listaLibrosDisponiblesHtml);
+        
+        activarDraggable();
+    });  
 }
 
 function guardarLibros() {
@@ -122,6 +172,7 @@ function guardarLibros() {
 
     listaLibrosAgregadosHtml.empty();
     activarDroppable();
+
     reiniciarBusqueda();
 
     return librosGuardados;
@@ -133,10 +184,11 @@ function obtenerLibrosGuardados() {
     // Recorremos las tarjetas dentro de la lista de agregados
     listaLibrosAgregadosHtml.find(".libro-card").each(function() {
 
-        const id = $(this).data("id");
+        // Obtenemos el título de la tarjeta
+        const titulo = $(this).find(".card-title").text().trim();
 
-        // Buscamos el libro original por id
-        const libro = libros.find(l => l.id === id);
+        // Buscamos el libro original por título
+        const libro = libros.find(l => l.title === titulo);
 
         if (libro) {
             librosGuardados.push(libro);

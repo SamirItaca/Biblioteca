@@ -1,4 +1,4 @@
-export function mensajeAlert(mensaje, tipo) {
+export function mensajeAlert(mensaje, tipo, tiempo = 3000) {
 
     const alertPlaceholder = document.getElementById('mensaje');
 
@@ -12,6 +12,12 @@ export function mensajeAlert(mensaje, tipo) {
     `;
 
     alertPlaceholder.append(wrapper);
+
+    // Cerrar automáticamente después de 'tiempo' milisegundos
+    setTimeout(() => {
+        const alert = bootstrap.Alert.getOrCreateInstance(wrapper.querySelector('.alert'));
+        alert.close();
+    }, tiempo);
 }
 
 window.mensajeAlert = mensajeAlert; // si también quieres llamar desde HTML

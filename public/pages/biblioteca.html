@@ -43,36 +43,37 @@
 
                 <form class="row g-3 w-100">
 
-                    <div class="col-6">
+                    <div class="col-12 col-md-6">
                         <input type="text" class="form-control search" id="inputSearch" placeholder="Ejemplo: Harry Potter">
                     </div>
 
-                    <div class="col-2">
+                    <div class="col-12 col-md-2">
                         <button type="button" class="btn btn-success w-100 search" onclick="buscarUnLibroPorTitulo()">Buscar</button>
                     </div>
 
-                    <div class="col-2">
+                    <div class="col-12 col-md-2">
                         <button type="button" class="btn btn-warning w-100 search" onclick="reiniciarBusqueda()">Reiniciar</button>
                     </div>
 
-                    <div class="col-2">
+                    <div class="col-12 col-md-2">
                         <button type="button" class="btn btn-primary w-100 search" onclick="guardarLibros()">Guardar libros</button>
                     </div>
 
                 </form>
+
             </section>
 
             <section id="libros">
 
                 <h4>Libros disponibles</h4>
-                <div class="lista-libros"></div>
+                <ul class="lista-libros"></ul>
 
             </section>
 
             <section id="libros-agregados">
 
                 <h4>Libros agregados</h4>
-                <div class="lista-libros"></div>
+                <ul class="lista-libros"></ul>
 
             </section>
 
