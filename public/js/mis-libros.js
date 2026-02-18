@@ -1,3 +1,4 @@
+let user;
 let misLibros = [];
 let listaLibrosHtml;
 

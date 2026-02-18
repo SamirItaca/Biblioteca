@@ -33,6 +33,40 @@
         <!-- Header -->
         <div id="header"></div>
 
+        <main>
+
+            <section id="info">
+                <h4 id="titulo"></h4>
+                <p id="descripcion"></p>
+            </section>
+
+            <hr>
+
+            <form>
+                <h4>Tus datos</h4>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo electronico</label>
+                    <input type="email" class="form-control" id="email" placeholder="name@example.com">
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de usuario</label>
+                    <input type="text" class="form-control" id="username" placeholder="username">
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" placeholder="2025$.">
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" type="button" onclick="actualizarPerfil()">Actualizar datos</button>
+                </div>
+            </form>
+
+        </main>
+
         <!-- Footer -->
         <div id="footer"></div>
         

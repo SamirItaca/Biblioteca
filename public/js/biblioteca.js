@@ -1,5 +1,6 @@
 import { mensajeAlert } from './app.js'
 
+let user;
 let libros = [];
 let listaLibrosDisponiblesHtml;
 let listaLibrosAgregadosHtml;
