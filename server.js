@@ -32,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ENDPOINTS
 app.use('/api/books', require('./routes/books'));
+app.use('/api/users', require('./routes/user'));
 
 // FIN ENDPOINT
 

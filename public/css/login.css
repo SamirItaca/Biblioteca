@@ -1,0 +1,30 @@
+.flip-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.flip-card {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.flip-card.girada {
+    transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+}
+
+.flip-back {
+    transform: rotateY(180deg);
+}
