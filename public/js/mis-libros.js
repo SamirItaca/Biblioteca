@@ -75,10 +75,16 @@ function crearListaLibros(libros) {
 
         const $tarjeta = $(`
             <h3>${libro.title}</h3>
-            <div>
-                <img src="${libro.thumbnail}" alt="${libro.title}" style="width:10%">
-                <p>${autores.join(", ")}</p>
-                <p>Páginas: ${paginas}</p>
+            <div class="card flex-row align-items-start">
+                    <img src="${libro.thumbnail || '/img/placeholder.png'}" 
+                         class="card-img-left" 
+                         alt="${libro.title}" 
+                         style="width: 80px; height: auto; margin-right: 10px;">
+                    <div class="card-body p-2">
+                        <h5 class="card-title mb-1">${libro.title}</h5>
+                        <p class="card-text mb-0">${autores.join(", ")}</p>
+                        <p class="card-text mb-0">Paginas: ${libro.pages}</p>
+                    </div>
             </div>
         `);
 
