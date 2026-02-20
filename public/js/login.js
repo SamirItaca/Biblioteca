@@ -14,6 +14,8 @@ async function iniciarSesion() {
 
     const data = await response.json();
     console.log(data);
+
+    window.location.href = '/biblioteca';
 }
 
 async function registrarse() {

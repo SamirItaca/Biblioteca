@@ -1,4 +1,22 @@
 body {
-    padding: 4px 8px;
     background-color: #fafafa;
+}
+
+main {
+    padding: 8px;
+}
+
+footer {
+    padding: 32px;
+    background-color: rgb(39, 39, 39);
+    color: #fafafa;
+}
+
+footer > div {
+    display: flex;
+    flex-direction: column;
+}
+
+footer > div > a {
+   color: #fafafa;
 }
