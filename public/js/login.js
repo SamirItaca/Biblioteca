@@ -1,44 +1,96 @@
-$(function() {
+import { mensajeAlert } from './app.js'
 
+$(function() {
+    // Opcional: limpiar mensajes al cargar
 });
 
 async function iniciarSesion() {
-    const username = $("#usernameLogin").val();
-    const password = $("#passLogin").val();
+    const username = $("#usernameLogin").val().trim();
+    const password = $("#passLogin").val().trim();
 
-    const response = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
+    if (!username || !password) {
+        mensajeAlert("No ha ingresado información", "danger");
+        return;
+    }
 
-    const data = await response.json();
-    console.log(data);
+    try {
+        const response = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
 
-    window.location.href = '/biblioteca';
+        const data = await response.json();
+
+        if (!response.ok) {
+            mensajeAlert(data.message || "Error al iniciar sesión", "danger");
+            return;
+        }
+
+        // ✅ Login correcto
+        mensajeAlert("Inicio de sesión exitoso", "success");
+
+        setTimeout(() => {
+            window.location.href = '/biblioteca';
+        }, 1000);
+
+    } catch (error) {
+        mensajeAlert("Error del servidor", "danger");
+        console.error(error);
+    }
 }
 
 async function registrarse() {
-    const username = $("#usernameRegister").val();
-    const email = $("#emailRegister").val();
-    const password = $("#passRegister").val();
+    const username = $("#usernameRegister").val().trim();
+    const email = $("#emailRegister").val().trim();
+    const password = $("#passRegister").val().trim();
 
-    console.log(username, email, password)
+    if (!username || !email || !password) {
+        mensajeAlert("Debe completar todos los campos", "danger");
+        return;
+    }
 
-    const response = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-    });
+    try {
+        const response = await fetch('/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
 
-    const data = await response.json();
-    console.log(data);
+        const data = await response.json();
+
+        if (!response.ok) {
+            mensajeAlert(data.message || "Error al registrarse", "danger");
+            return;
+        }
+
+        mensajeAlert("Registro exitoso. Ahora puedes iniciar sesión", "success");
+
+        setTimeout(() => {
+            girarTarjeta();
+        }, 1000);
+
+    } catch (error) {
+        mensajeAlert("Error del servidor", "danger");
+        console.error(error);
+    }
 }
 
 async function obtenerUsuario(username) {
-    const response = await fetch(`/api/users/${username}`);
-    const data = await response.json();
-    console.log(data);
+    try {
+        const response = await fetch(`/api/users/${username}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            mensajeAlert("Usuario no encontrado", "danger");
+            return;
+        }
+
+        console.log(data);
+
+    } catch (error) {
+        mensajeAlert("Error al obtener usuario", "danger");
+    }
 }
 
 function girarTarjeta() {
