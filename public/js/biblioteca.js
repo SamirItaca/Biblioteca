@@ -1,17 +1,25 @@
-import { mensajeAlert } from './app.js'
+import { mensajeAlert, obtenerUsuario } from './app.js'
 
 let user;
 let libros = [];
 let listaLibrosDisponiblesHtml;
 let listaLibrosAgregadosHtml;
 
-$(function() {
+$(async function() {
+
+    // Obtener usuario logueado
+    user = await getUser();
+
+    if (!user) return;
 
     // Seleccionamos la lista de libros disponibles
     listaLibrosDisponiblesHtml = $("#libros .lista-libros");
 
     // Seleccionamos lista de libros agregados
     listaLibrosAgregadosHtml = $("#libros-agregados .lista-libros");
+
+    // Cargamos los libros ya guardados del usuario.
+    crearListaLibrosAgregados(user);
 
     cargarLibros().then(librosObtenidos => {
 
@@ -25,6 +33,11 @@ $(function() {
         activarDroppable();
     });
 });
+
+async function getUser() {
+    const username = localStorage.getItem("username");
+    return await obtenerUsuario(username);
+}
 
 function activarDraggable() {
     $(".libro-card").draggable({
@@ -127,6 +140,34 @@ function crearListaLibros(libros, listalibrosHtml) {
     });
 }
 
+function crearListaLibrosAgregados(user) {
+    if (user.libros_guardados.length > 0) {
+        // Crear tarjetas dinámicamente
+        user.libros_guardados.forEach(libro => {
+            // Si authors no existe, usar un array vacío
+            const autores = Array.isArray(libro.authors) ? libro.authors : ['Sin autor'];
+
+            const $tarjeta = $(`
+                <li class="libro-card" style="list-style: none; margin-bottom: 10px;">
+                    <div class="card d-flex flex-row align-items-start">
+                        <img src="${libro.thumbnail || '/img/placeholder.png'}" 
+                            class="card-img-left" 
+                            alt="${libro.title}" 
+                            style="width: 80px; height: auto; margin-right: 10px;">
+                        <div class="card-body p-2">
+                            <h5 class="card-title mb-1">${libro.title}</h5>
+                            <p class="card-text mb-0">${autores.join(", ")}</p>
+                            <p class="card-text mb-0">Paginas: ${libro.pages}</p>
+                        </div>
+                    </div>
+                </li>
+            `);
+
+            listaLibrosAgregadosHtml.append($tarjeta);
+        });
+    }
+}
+
 function buscarUnLibroPorTitulo() {
     const tituloLibro = $("#inputSearch").val().trim();
 
@@ -163,14 +204,40 @@ function reiniciarBusqueda() {
     });  
 }
 
-function guardarLibros() {
+async function guardarLibros() {
 
-    listaLibrosAgregadosHtml.empty();
-    activarDroppable();
+    try {
+        const librosGuardados = obtenerLibrosGuardados();
 
-    reiniciarBusqueda();
+        if (!librosGuardados || librosGuardados.length === 0) {
+            mensajeAlert("No hay libros para guardar", "warning");
+            return;
+        }
 
-    return librosGuardados;
+        const response = await fetch(`/api/users/save/${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ libros: librosGuardados })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            mensajeAlert(data.error || "Error al guardar los libros", "danger");
+            return;
+        }
+
+        mensajeAlert("Libros guardados correctamente", "success");
+
+        listaLibrosAgregadosHtml.empty();
+        activarDroppable();
+        reiniciarBusqueda();
+        crearListaLibrosAgregados(user);
+
+    } catch (error) {
+        mensajeAlert("Error al guardar los libros", "danger");
+    }
+    
 }
 
 function obtenerLibrosGuardados() {

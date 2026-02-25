@@ -79,4 +79,38 @@ router.get('/:username', async (req, res) => {
     }
 });
 
+router.post('/save/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { libros } = req.body;
+
+    if (!libros || !Array.isArray(libros)) {
+        return res.status(400).json({ error: 'Debe enviar un array de libros' });
+    }
+
+    try {
+        const result = await pool.query(
+            `
+            UPDATE usuarios
+            SET libros_guardados = $1
+            WHERE id = $2
+            RETURNING *
+            `,
+            [JSON.stringify(libros), userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json({
+            message: 'Libros guardados correctamente',
+            usuario: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
+
 module.exports = router;

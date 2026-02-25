@@ -21,8 +21,27 @@ export function mensajeAlert(mensaje, tipo, tiempo = 3000) {
 }
 
 export function cerrarSesion() {
+    localStorage.clear();
     window.location.href = '/login';
+}
+
+export async function obtenerUsuario(username) {
+    try {
+        const response = await fetch(`/api/users/${username}`);
+        const user = await response.json();
+
+        if (!response.ok) {
+            mensajeAlert("Usuario no encontrado", "danger");
+            return;
+        }
+
+        return user;
+
+    } catch (error) {
+        mensajeAlert("Error al obtener usuario", "danger");
+    }
 }
 
 window.mensajeAlert = mensajeAlert;
 window.cerrarSesion = cerrarSesion;
+window.obtenerUsuario = obtenerUsuario;

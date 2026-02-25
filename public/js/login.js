@@ -27,7 +27,7 @@ async function iniciarSesion() {
             return;
         }
 
-        // ✅ Login correcto
+        localStorage.setItem("username", username);
         mensajeAlert("Inicio de sesión exitoso", "success");
 
         setTimeout(() => {
@@ -73,23 +73,6 @@ async function registrarse() {
     } catch (error) {
         mensajeAlert("Error del servidor", "danger");
         console.error(error);
-    }
-}
-
-async function obtenerUsuario(username) {
-    try {
-        const response = await fetch(`/api/users/${username}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            mensajeAlert("Usuario no encontrado", "danger");
-            return;
-        }
-
-        console.log(data);
-
-    } catch (error) {
-        mensajeAlert("Error al obtener usuario", "danger");
     }
 }
 
