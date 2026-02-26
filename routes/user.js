@@ -79,6 +79,7 @@ router.get('/:username', async (req, res) => {
     }
 });
 
+// Guardar libros en un usuario
 router.post('/save/:userId', async (req, res) => {
     const { userId } = req.params;
     const { libros } = req.body;
@@ -104,6 +105,46 @@ router.post('/save/:userId', async (req, res) => {
 
         res.json({
             message: 'Libros guardados correctamente',
+            usuario: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
+
+// Actualizar un usuario
+router.put('/update/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { username, email, password } = req.body;
+
+    if (!username && !email && !password) {
+        return res.status(400).json({ 
+            error: 'No ha enviado información para actualizar' 
+        });
+    }
+
+    try {
+        const result = await pool.query(
+            `
+            UPDATE usuarios
+            SET 
+                username = COALESCE($1, username),
+                email = COALESCE($2, email),
+                password = COALESCE($3, password)
+            WHERE id = $4
+            RETURNING *
+            `,
+            [username || null, email || null, password || null, userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json({
+            message: 'Usuario actualizado correctamente',
             usuario: result.rows[0]
         });
 

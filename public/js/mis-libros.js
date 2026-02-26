@@ -1,8 +1,15 @@
+import { mensajeAlert, obtenerUsuario } from "./app.js";
+
 let user;
 let misLibros = [];
 let listaLibrosHtml;
 
-$(function() {
+$(async function() {
+
+    // Obtener usuario logueado
+    user = await getUser();
+
+    if (!user) return;
 
     // Seleccionamos la lista de libros disponibles
     listaLibrosHtml = $("#mis-libros");
@@ -11,12 +18,19 @@ $(function() {
 
         misLibros = librosObtenidos;
 
+        $("#txtTitulo").text("Hola " + user.username + ", estos son tus libros");
+
         // Crear tarjetas de libros
         crearListaLibros(misLibros);
 
         activarAccordion();
     });
 });
+
+async function getUser() {
+    const username = localStorage.getItem("username");
+    return await obtenerUsuario(username);
+}
 
 function activarAccordion() {
     listaLibrosHtml.accordion();
@@ -35,7 +49,7 @@ async function cargarLibros() {
     listaLibrosHtml.empty().append($spinner);
 
     // Esperar los libros
-    const libros = await obtenerMisLibros();
+    const libros = await obtenerMisLibros(user);
 
     // Quitar spinner
     $("#spinner-carga").remove();
@@ -43,16 +57,18 @@ async function cargarLibros() {
     return libros;
 }
 
-async function obtenerMisLibros() {
+async function obtenerMisLibros(user) {
     
     try {
-        // Llamada a la API
-        const response = await fetch("https://custom-biblioteca.up.railway.app/api/books/search");
-        if (!response.ok) throw new Error("Error al obtener libros desde la API");
 
-        const libros = await response.json();
+        if (user.libros_guardados.length > 0) {
+            const libros = user.libros_guardados;
 
-        return libros;
+            return libros;
+        }
+
+        mensajeAlert('El usuario ' + user.username + " no tiene libros", "primary")
+        return;
 
     } catch (error) {
         console.error(error);
@@ -91,8 +107,6 @@ function crearListaLibros(libros) {
 
         listaLibrosHtml.append($tarjeta);
     });
-
-    $("#txtTitulo").text("Hola User, estos son tus libros");
     
     // Redondear el tiempo total a 1 decimal
     const tiempoRedondeado = Math.ceil(tiempoTotalHoras * 10) / 10;
